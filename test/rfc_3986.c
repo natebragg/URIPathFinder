@@ -89,6 +89,7 @@ int main() {
     test_uri("http://user@example.com", "http", "user", "example.com", NULL, "", NULL, NULL);
     test_uri("http://user:pass@example.com", "http", "user:pass", "example.com", NULL, "", NULL, NULL);
     test_uri("http://user:pass@example.com:80", "http", "user:pass", "example.com", "80", "", NULL, NULL);
+    test_uri("http://www.example.com:123@", "http", "www.example.com:123", "", NULL, "", NULL, NULL);
 
     // Uncommon ports and complex paths
     test_uri("ftp://example.com:2121/files", "ftp", NULL, "example.com", "2121", "/files", NULL, NULL);
