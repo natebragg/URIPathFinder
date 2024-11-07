@@ -462,7 +462,10 @@ static const char *parse_IP_literal(const char **s) {
 
 // host = IP-literal / IPv4address / reg-name
 static const char *parse_host(const char **s) {
-    return parse_opt(s, 3, parse_IP_literal, parse_IPv4address, parse_reg_name);
+    return parse_opt(s, 3, parse_IP_literal,
+                           // IPv4address is contained by reg_name
+                           // parse_IPv4address,
+                           parse_reg_name);
 }
 
 // port = *DIGIT

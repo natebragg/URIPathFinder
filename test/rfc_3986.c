@@ -94,6 +94,7 @@ int main() {
     // Uncommon ports and complex paths
     test_uri("ftp://example.com:2121/files", "ftp", NULL, "example.com", "2121", "/files", NULL, NULL);
     test_uri("http://127.0.0.1:8080/resource", "http", NULL, "127.0.0.1", "8080", "/resource", NULL, NULL);
+    test_uri("http://127.1234.0.1:8080/resource", "http", NULL, "127.1234.0.1", "8080", "/resource", NULL, NULL);
     test_uri("http://example.com:1234/path/to/page", "http", NULL, "example.com", "1234", "/path/to/page", NULL, NULL);
     test_uri("http://localhost:8080/test", "http", NULL, "localhost", "8080", "/test", NULL, NULL);
     test_uri("https://secure.example.com:8443", "https", NULL, "secure.example.com", "8443", "", NULL, NULL);
