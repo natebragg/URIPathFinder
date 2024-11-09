@@ -289,10 +289,20 @@ static const char *parse_scheme(const char **s) {
 // userinfo  = *( unreserved / pct-encoded / sub-delims / ":" )
 static const char *parse_userinfo_char(const char **s) {
     return parse_opt(s, 4, parse_unreserved, parse_pct_encoded,
-                           parse_sub_delims, parse_colon);
+                           // colon is handled in parse_userinfo
+                           // parse_colon,
+                           parse_sub_delims);
 }
-static const char *parse_userinfo(const char **s) {
-    return parse_n_star(s, 0, parse_userinfo_char);
+static const char *parse_userinfo(const char **s, const char **maybe_colon) {
+    const char *match = parse_n_star(s, 0, parse_userinfo_char);
+    // The complexity of this is necessary to identify the first colon,
+    // which is used to avoid reparsing if this is a host, not a userinfo
+    if ((*maybe_colon = parse_colon(s)) != NULL) {
+        do {
+            parse_n_star(s, 0, parse_userinfo_char);
+        } while (parse_colon(s) != NULL);
+    }
+    return match;
 }
 
 // reg-name = *( unreserved / pct-encoded / sub-delims )
@@ -571,14 +581,23 @@ static const char *parse_hier_part(const char **s, const char **slash, const cha
          // back up if the second '/' is missing
          ((*slash = NULL), (*s = (*s) - 1), false))) {
         // userinfo can be empty so will always succeed
-        *userinfo = parse_userinfo(s);
-        // backup if the '@' is missing
-        if ((*atsymbol = parse_atsymbol(s)) == NULL) {
-            *s = *userinfo;
+        *userinfo = parse_userinfo(s, colon);
+        if ((*atsymbol = parse_atsymbol(s)) != NULL) {
+            // found userinfo@
+            *host = parse_host(s);
+        } else { // no @, it might have parsed a host
+            *host = *userinfo;
             *userinfo = NULL;
+            if (*colon != NULL) {
+                // it parsed a host and found a colon
+                // rewind since port syntax is different
+                *s = *colon;
+            } else if (*host == *s) {
+                // it didn't parse anything because it
+                // found a character like [
+                *host = parse_host(s);
+            }
         }
-        // host can be empty so will always succeed
-        *host = parse_host(s);
         if ((*colon = parse_colon(s)) != NULL) {
             *port = parse_port(s);
         }
