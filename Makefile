@@ -6,12 +6,17 @@ BUILD_SRC=${BUILD_DIR}/${SRC_DIR}
 BUILD_TEST=${BUILD_DIR}/${TEST_DIR}
 
 STANDARDS=rfc_3986
+HELPERS=rbtree
 INCLUDES=${patsubst %,${INCLUDE_DIR}/%.h,${STANDARDS}}
+HELPER_INCLUDES=${patsubst %,${SRC_DIR}/%.h,${HELPERS}}
 SRC=${patsubst %,${SRC_DIR}/%.c,${STANDARDS}}
-TEST_SRC=${patsubst %,${TEST_DIR}/%.c,${STANDARDS}}
+TEST_SRC=${patsubst %,${TEST_DIR}/%.c,${STANDARDS}} \
+         ${patsubst %,${TEST_DIR}/%.c,${HELPERS}}
 TARGETS=${patsubst %,${BUILD_SRC}/%.o,${STANDARDS}}
-TEST_TARGETS=${patsubst %,${BUILD_TEST}/%.o,${STANDARDS}}
-TESTS=${patsubst %,${BUILD_DIR}/test_%,${STANDARDS}}
+TEST_TARGETS=${patsubst %,${BUILD_TEST}/%.o,${STANDARDS}} \
+             ${patsubst %,${BUILD_TEST}/%.o,${HELPERS}}
+TESTS=${patsubst %,${BUILD_DIR}/test_%,${STANDARDS}} \
+      ${patsubst %,${BUILD_DIR}/test_%,${HELPERS}}
 
 STATIC_LIB=${BUILD_DIR}/libURIPathFinder.a
 
@@ -22,7 +27,7 @@ CFLAGS=-Wall -Wextra -Wno-comment -Wno-logical-op-parentheses $\
 .PHONY: lib
 lib: ${STATIC_LIB}
 
-${BUILD_DIR}/%.o: %.c ${INCLUDES}
+${BUILD_DIR}/%.o: %.c ${INCLUDES} ${HELPER_INCLUDES}
 	mkdir -p ${dir $@}
 	${CC} -o $@ $< -c ${CFLAGS}
 
@@ -30,7 +35,7 @@ ${STATIC_LIB}: ${TARGETS}
 	ar cru $@ $^
 	ranlib $@
 
-${TESTS}: ${TEST_TARGETS} ${STATIC_LIB}
+${TESTS}: ${BUILD_DIR}/test_% : ${BUILD_TEST}/%.o ${STATIC_LIB}
 	${CC} -I ${CFLAGS} -o $@ $^
 
 .PHONY: test
