@@ -89,6 +89,11 @@ MAKE_TEL_GET_FROM_PARS_GET(pars_3)
 MAKE_TEL_GET_FROM_PARS_GET(pars_4)
 
 char *get_pars(const Tel *t, char *buf, size_t *len) {
+    size_t f_len = len_pars(t);
+    if (f_len >= *len) {
+        *len = f_len;
+        return NULL;
+    }
     size_t original_length = *len;
     if (get_pars_1(&t->pars, buf, len) == NULL) {
         return NULL;
