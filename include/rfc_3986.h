@@ -97,13 +97,4 @@ size_t len_path(const URI *);
 size_t len_query(const URI *);
 size_t len_fragment(const URI *);
 
-// By default RFC-3986 only handles ASCII.  If more characters
-// are needed, set the functions to handle them.  They must
-// return a pointer to the character if found and advance the
-// argument to beyond the character. If not found, return NULL
-// and do not advance the argument.
-typedef const char *(*parser)(const char **);
-void set_alpha_parser(parser);
-void set_digit_parser(parser);
-
-#endif
+#endif // URI_PATH_FINDER_RFC_3986_H

@@ -30,56 +30,28 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rfc_3986.h"
+#include "hof.h"
+#include "chars.h"
 
 #include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
 
-#define MAKE_LEN(field, end) \
-    size_t len_##field(const URI *uri) { \
-        return uri->field ? (end - uri->field) : 0; \
-    }
-#define OR(a, b) \
-    (uri->a ? uri->a : b)
+MAKE_LEN(URI, scheme,   data->colon_s                                          )
+MAKE_LEN(URI, userinfo, data->atsymbol                                         )
+MAKE_LEN(URI, host,     OR(colon_p,   OR(path, OR(question, OR(pound, data->end)))))
+MAKE_LEN(URI, port,     OR(              path, OR(question, OR(pound, data->end))))
+MAKE_LEN(URI, path,     OR(                       question, OR(pound, data->end)))
+MAKE_LEN(URI, query,    OR(                                    pound, data->end))
+MAKE_LEN(URI, fragment,                                               data->end)
 
-MAKE_LEN(scheme,   uri->colon_s                                          )
-MAKE_LEN(userinfo, uri->atsymbol                                         )
-MAKE_LEN(host,     OR(colon_p,   OR(path, OR(question, OR(pound, uri->end)))))
-MAKE_LEN(port,     OR(              path, OR(question, OR(pound, uri->end))))
-MAKE_LEN(path,     OR(                       question, OR(pound, uri->end)))
-MAKE_LEN(query,    OR(                                    pound, uri->end))
-MAKE_LEN(fragment,                                               uri->end)
-
-#define MAKE_GETTER(field) \
-    char *get_##field(const URI *uri, char *buf, size_t *len){ \
-        size_t f_len = len_##field(uri); \
-        if (uri->field == NULL || f_len >= *len) { \
-            *len = f_len; \
-            return NULL; \
-        } \
-        strncpy(buf, uri->field, f_len); \
-        buf[f_len] = '\0'; \
-        return buf; \
-    }
-
-MAKE_GETTER(scheme)
-MAKE_GETTER(userinfo)
-MAKE_GETTER(host)
-MAKE_GETTER(port)
-MAKE_GETTER(path)
-MAKE_GETTER(query)
-MAKE_GETTER(fragment)
-
-static parser alpha_parser = NULL;
-static parser digit_parser = NULL;
-
-void set_alpha_parser(parser p) {
-    alpha_parser = p;
-}
-
-void set_digit_parser(parser p) {
-    digit_parser = p;
-}
+MAKE_GETTER(URI, scheme)
+MAKE_GETTER(URI, userinfo)
+MAKE_GETTER(URI, host)
+MAKE_GETTER(URI, port)
+MAKE_GETTER(URI, path)
+MAKE_GETTER(URI, query)
+MAKE_GETTER(URI, fragment)
 
 // For the parsers other than parse_URI, the protocol is as
 // follows: If the parser does not match, return NULL and don't
@@ -87,155 +59,6 @@ void set_digit_parser(parser p) {
 // pointer to the first character of the match, and advance the
 // input string *s to the first non-matching character.  If
 // matched, the length of the match is (*s) - match.
-
-// Match a single character
-static const char *parse_char(const char **s, char c) {
-    const char *match = NULL;
-    if(**s == c) {
-        match = *s;
-        *s = (*s) + 1;
-    }
-    return match;
-}
-
-#define MAKE_PARSE(name, val) \
-    static const char *parse_##name(const char **s) { \
-        return parse_char(s, val); \
-    }
-
-MAKE_PARSE(colon,      ':')
-MAKE_PARSE(atsymbol,   '@')
-MAKE_PARSE(percent,    '%')
-MAKE_PARSE(dash,       '-')
-MAKE_PARSE(dot,        '.')
-MAKE_PARSE(underscore, '_')
-MAKE_PARSE(tilde,      '~')
-MAKE_PARSE(fwd_slash,  '/')
-MAKE_PARSE(question,   '?')
-MAKE_PARSE(pound,      '#')
-MAKE_PARSE(lbracket,   '[')
-MAKE_PARSE(rbracket,   ']')
-MAKE_PARSE(exclamation,'!')
-MAKE_PARSE(dollar,     '$')
-MAKE_PARSE(ampersand,  '&')
-MAKE_PARSE(singlequote,'\'')
-MAKE_PARSE(lparens,    '(')
-MAKE_PARSE(rparens,    ')')
-MAKE_PARSE(star,       '*')
-MAKE_PARSE(plus,       '+')
-MAKE_PARSE(comma,      ',')
-MAKE_PARSE(semicolon,  ';')
-MAKE_PARSE(equal,      '=')
-
-static const char *parse_alpha(const char **s) {
-    if (alpha_parser != NULL) {
-        return alpha_parser(s);
-    }
-    const char *match = NULL;
-    char c = **s;
-    if (((c >= 'A') && (c <= 'Z')) ||
-        ((c >= 'a') && (c <= 'z'))) {
-        match = *s;
-        *s = (*s) + 1;
-    }
-    return match;
-}
-
-static const char *parse_digit(const char **s) {
-    if (digit_parser != NULL) {
-        return digit_parser(s);
-    }
-    const char *match = NULL;
-    char c = **s;
-    if ((c >= '0') && (c <= '9')) {
-        match = *s;
-        *s = (*s) + 1;
-    }
-    return match;
-}
-
-static const char *parse_hexdig(const char **s) {
-    const char *match = NULL;
-    char c = **s;
-    if (((c >= '0') && (c <= '9')) ||
-        ((c >= 'A') && (c <= 'F')) ||
-        ((c >= 'a') && (c <= 'f'))) {
-        match = *s;
-        *s = (*s) + 1;
-    }
-    return match;
-}
-
-// Match the parser p exactly n times.
-static const char *parse_n(const char **s, unsigned int n, parser p) {
-    const char *match = *s;
-    unsigned int i = 0;
-    for (i = 0; i < n; i++) {
-        const char *v = p(s);
-        if (v == NULL) {
-            *s = match;
-            return NULL;
-        }
-    }
-    return match;
-}
-
-// Match the parser p at least n times.
-static const char *parse_n_star(const char **s, unsigned int n, parser p) {
-    const char *match = parse_n(s, n, p);
-    while (p(s) != NULL);
-    return match;
-}
-
-// Match the parser p at least n times.
-static const char *parse_n_to_m(const char **s, unsigned int n, unsigned int m, parser p) {
-    const char *match = parse_n(s, n, p);
-    unsigned int i = n;
-    for (i = n; i < m && p(s) != NULL; i++);
-    return match;
-}
-
-// Match the first of n parsers that matches
-static const char *parse_opt(const char **s, unsigned int n, ...) {
-    const char *match = NULL;
-    va_list ap;
-    va_start(ap, n);
-    while (n-- > 0) {
-        const char *tmp = *s;
-        parser p = va_arg(ap, parser);
-        match = p(&tmp);
-        if (match != NULL) {
-            *s = tmp;
-            break;
-        }
-    }
-    va_end(ap);
-    return match;
-}
-
-// Match all parsers in order
-static const char *parse_cat(const char **s, unsigned int n, ...) {
-    const char *match = NULL;
-    va_list ap;
-    va_start(ap, n);
-    if (n-- > 0) {
-        parser p = va_arg(ap, parser);
-        match = p(s);
-    }
-    if (match != NULL) {
-        while (n-- > 0) {
-            parser p = va_arg(ap, parser);
-            if (p(s) == NULL) {
-                // failed, rewind
-                *s = match;
-                match = NULL;
-                break;
-            }
-        }
-    }
-    va_end(ap);
-    return match;
-}
 
 // pct-encoded = "%" HEXDIG HEXDIG
 static const char *parse_pct_encoded(const char **s) {
