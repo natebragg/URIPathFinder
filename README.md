@@ -1,7 +1,7 @@
 # URIPathFinder
 A simple parser for URIs.
 
-This library implements RFC-3986
+This library implements RFC-3986 and RFC-3966.
 
 It is straightforward to use:
 
@@ -42,3 +42,5 @@ example above, it provides `get_*` functions that copy the field into a user
 supplied buffer.  By default it only allows ASCII alphanumeric characters, but
 the library gives two functions `set_alpha_parser` and `set_digit_parser` to
 use another character set ( utf-8, etc.)
+
+RFC 3966 has a similar interface, invoked using `parse_telephone`.
