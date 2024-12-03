@@ -38,9 +38,9 @@
 #include <stddef.h>
 
 #define MAKE_TEL_LEN_FROM_PARS_LEN(field) \
-	size_t len_par_##field(const Tel *t) { \
-		return len_##field(&t->pars); \
-	}
+    size_t len_par_##field(const Tel *t) { \
+        return len_##field(&t->pars); \
+    }
 
 MAKE_LEN(Tel, global_number, data->number_stop)
 MAKE_LEN(Tel, local_number,  data->number_stop)
@@ -61,14 +61,14 @@ MAKE_TEL_LEN_FROM_PARS_LEN(pars_3)
 MAKE_TEL_LEN_FROM_PARS_LEN(pars_4)
 
 size_t len_pars(const Tel *t) {
-	return len_pars_1(&t->pars) + len_pars_2(&t->pars) +
-		   len_pars_3(&t->pars) + len_pars_4(&t->pars);
+    return len_pars_1(&t->pars) + len_pars_2(&t->pars) +
+           len_pars_3(&t->pars) + len_pars_4(&t->pars);
 }
 
 #define MAKE_TEL_GET_FROM_PARS_GET(field) \
-	char *get_par_##field(const Tel *t, char *buf, size_t *len) { \
-		return get_##field(&t->pars, buf, len); \
-	}
+    char *get_par_##field(const Tel *t, char *buf, size_t *len) { \
+        return get_##field(&t->pars, buf, len); \
+    }
 
 MAKE_GETTER(Tel, global_number)
 MAKE_GETTER(Tel, local_number)
@@ -89,23 +89,23 @@ MAKE_TEL_GET_FROM_PARS_GET(pars_3)
 MAKE_TEL_GET_FROM_PARS_GET(pars_4)
 
 char *get_pars(const Tel *t, char *buf, size_t *len) {
-	size_t original_length = *len;
-	if (get_pars_1(&t->pars, buf, len) == NULL) {
-		return NULL;
-	} 
-	size_t tmplen = original_length - *len;
-	if (get_pars_2(&t->pars, &buf[*len], &tmplen) != NULL) {
-		*len = *len + tmplen;
-		tmplen = original_length - *len;
-		if (get_pars_3(&t->pars, &buf[*len], &tmplen) != NULL) {
-			*len = *len + tmplen;
-			tmplen = original_length - *len;
-			if (get_pars_4(&t->pars, &buf[*len], &tmplen) != NULL) {
-			    *len = *len + tmplen;
-			}
-		}
-	}
-	return buf;
+    size_t original_length = *len;
+    if (get_pars_1(&t->pars, buf, len) == NULL) {
+        return NULL;
+    }
+    size_t tmplen = original_length - *len;
+    if (get_pars_2(&t->pars, &buf[*len], &tmplen) != NULL) {
+        *len = *len + tmplen;
+        tmplen = original_length - *len;
+        if (get_pars_3(&t->pars, &buf[*len], &tmplen) != NULL) {
+            *len = *len + tmplen;
+            tmplen = original_length - *len;
+            if (get_pars_4(&t->pars, &buf[*len], &tmplen) != NULL) {
+                *len = *len + tmplen;
+            }
+        }
+    }
+    return buf;
 }
 
 // alphanum = ALPHA / DIGIT
@@ -479,11 +479,11 @@ static const char *parse_par_star(const char **s, Pars *result) {
 // local-number = local-number-digits *par context *par
 static const char *parse_local_number(const char **s, Tel *t) {
     const char *match = parse_local_number_digits(s);
-	// Check for valid par list and context, which must be present
+    // Check for valid par list and context, which must be present
     if (match != NULL) {
         t->local_number = (char*)match;
         t->number_stop = (char*)*s;
-		// Check for valid par list and context, which must be present
+        // Check for valid par list and context, which must be present
         if (parse_par_star(s, &t->pars) == NULL || t->pars.context == NULL) {
             *s = match;
             match = NULL;
@@ -498,7 +498,7 @@ static const char *parse_global_number(const char **s, Tel *t) {
     if (match != NULL) {
         t->global_number = (char*)match;
         t->number_stop = (char*)*s;
-		// Check for valid par list but not context, which shouldn't be present
+        // Check for valid par list but not context, which shouldn't be present
         if (parse_par_star(s, &t->pars) == NULL || t->pars.context != NULL) {
             *s = match;
             match = NULL;
