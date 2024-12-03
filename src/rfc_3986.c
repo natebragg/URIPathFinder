@@ -245,7 +245,7 @@ static const char *parse_pct_encoded(const char **s) {
 // unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
 static const char *parse_unreserved(const char **s) {
     return parse_opt(s, 6, parse_alpha, parse_digit, parse_dash,
-                        parse_dot, parse_underscore, parse_tilde);
+                           parse_dot, parse_underscore, parse_tilde);
 }
 
 // gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
@@ -633,24 +633,7 @@ static const char *parse_fragment(const char **s) {
 // URI = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
 URI parse_URI(const char *uri) {
     const char **s = &uri;
-
-    URI result_null = {
-        .scheme = NULL,
-        .colon_s = NULL,
-        .slash = NULL,
-        .userinfo = NULL,
-        .atsymbol = NULL,
-        .host = NULL,
-        .colon_p = NULL,
-        .port = NULL,
-        .path = NULL,
-        .question = NULL,
-        .query = NULL,
-        .pound = NULL,
-        .fragment = NULL,
-        .end = NULL,
-    };
-    URI result = result_null;
+    URI result = { 0 };
 
     if ((result.scheme  = (char*)parse_scheme(s)) == NULL ||
         (result.colon_s = (char*)parse_colon(s)) == NULL ||
@@ -668,6 +651,7 @@ URI parse_URI(const char *uri) {
         (((result.pound    = (char*)parse_pound(s)) != NULL) &&
          ((result.fragment = (char*)parse_fragment(s)) == NULL)) ||
         (*(result.end      = (char*)*s) != '\0')) {
+        static const URI result_null = { 0 };
         result = result_null;
     }
     return result;
