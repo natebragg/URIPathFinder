@@ -224,8 +224,8 @@ typedef enum scheme {
     ms_officeapp, // ms-officeapp
     ms_people, // ms-people
     ms_personacard, // ms-personacard
-    ms_project, // ms-project
     ms_powerpoint, // ms-powerpoint
+    ms_project, // ms-project
     ms_publisher, // ms-publisher
     ms_recall, // ms-recall
     ms_remotedesktop, // ms-remotedesktop
@@ -306,9 +306,9 @@ typedef enum scheme {
     pres, // Presence: RFC3859
     prospero, // Prospero Directory Service: RFC4157
     proxy,
-    pwid,
     psyc,
     pttp,
+    pwid,
     qb,
     query,
     quic_transport, // quic-transport
@@ -390,17 +390,17 @@ typedef enum scheme {
     ventrilo,
     ves,
     videotex, // RFC2122, RFC3986
-    vnc, // Remote Framebuffer Protocol: RFC7869
     view_source, // view-source
+    vnc, // Remote Framebuffer Protocol: RFC7869
     vscode,
     vscode_insiders, // vscode-insiders
     vsls,
     w3,
     wais, // Wide Area Information Servers: RFC4156
-    web3,
     wcr,
-    webcal,
+    web3,
     web_ap, // web+ap
+    webcal,
     wifi,
     wpid,
     ws, // WebSocket connections: RFC8307, RFC6455
@@ -410,10 +410,10 @@ typedef enum scheme {
     xcon, // RFC6501
     xcon_userid, // xcon_userid: RFC6501: xcon-userid
     xfire,
+    xftp,
     xmlrpc_beep, // xmlrpc.beep: RFC3529
     xmlrpc_beeps, // xmlrpc.beeps: RFC3529
     xmpp, // Extensible Messaging and Presence Protocol: RFC5122
-    xftp,
     xrcp,
     xri,
     ymsgr,
