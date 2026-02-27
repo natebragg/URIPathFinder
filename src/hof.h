@@ -1,33 +1,34 @@
-// URIPathFinder: A simple parser for URIs
-//
-// BSD 3-Clause License
-//
-// Copyright (c) 2024, Nate Bragg
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its
-//    contributors may be used to endorse or promote products derived from
-//    this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/* URIPathFinder: A simple parser for URIs
+ *
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2024, Nate Bragg
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #ifndef URI_PATH_FINDER_HOF_H
 #define URI_PATH_FINDER_HOF_H
@@ -56,7 +57,7 @@
 
 typedef const char *(*parser)(const char **);
 
-// Match the parser p exactly n times.
+/* Match the parser p exactly n times. */
 static const char *parse_n(const char **s, unsigned int n, parser p) {
     const char *match = *s;
     unsigned int i = 0;
@@ -70,14 +71,14 @@ static const char *parse_n(const char **s, unsigned int n, parser p) {
     return match;
 }
 
-// Match the parser p at least n times.
+/* Match the parser p at least n times. */
 static const char *parse_n_star(const char **s, unsigned int n, parser p) {
     const char *match = parse_n(s, n, p);
     while (p(s) != NULL);
     return match;
 }
 
-// Match the parser p at least n times.
+/* Match the parser p at least n times. */
 static const char *parse_n_to_m(const char **s, unsigned int n, unsigned int m, parser p) {
     const char *match = parse_n(s, n, p);
     unsigned int i = n;
@@ -85,7 +86,7 @@ static const char *parse_n_to_m(const char **s, unsigned int n, unsigned int m, 
     return match;
 }
 
-// Match the first of n parsers that matches
+/* Match the first of n parsers that matches */
 static const char *parse_opt(const char **s, unsigned int n, ...) {
     const char *match = NULL;
     va_list ap;
@@ -103,7 +104,7 @@ static const char *parse_opt(const char **s, unsigned int n, ...) {
     return match;
 }
 
-// Match all parsers in order
+/* Match all parsers in order */
 static const char *parse_cat(const char **s, unsigned int n, ...) {
     const char *match = NULL;
     va_list ap;
@@ -116,7 +117,7 @@ static const char *parse_cat(const char **s, unsigned int n, ...) {
         while (n-- > 0) {
             parser p = va_arg(ap, parser);
             if (p(s) == NULL) {
-                // failed, rewind
+                /* failed, rewind */
                 *s = match;
                 match = NULL;
                 break;
@@ -127,4 +128,4 @@ static const char *parse_cat(const char **s, unsigned int n, ...) {
     return match;
 }
 
-#endif // URI_PATH_FINDER_HOF_H
+#endif /* URI_PATH_FINDER_HOF_H */

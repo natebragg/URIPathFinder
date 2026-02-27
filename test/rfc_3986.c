@@ -1,33 +1,34 @@
-// URIPathFinder: A simple parser for URIs
-//
-// BSD 3-Clause License
-//
-// Copyright (c) 2024, Nate Bragg
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its
-//    contributors may be used to endorse or promote products derived from
-//    this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/* URIPathFinder: A simple parser for URIs
+ *
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2024, Nate Bragg
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #include "rfc_3986.h"
 
@@ -79,7 +80,7 @@ void test_uri(char *p_url, char *p_scheme, char *p_userinfo, char *p_host, char 
 }
 
 int main() {
-    // Basic URIs
+    /* Basic URIs */
     test_uri("http://example.com", "http", NULL, "example.com", NULL, "", NULL, NULL);
     test_uri("http://example.com/", "http", NULL, "example.com", NULL, "/", NULL, NULL);
     test_uri("http://example.com:80/path", "http", NULL, "example.com", "80", "/path", NULL, NULL);
@@ -91,29 +92,29 @@ int main() {
     test_uri("ftp://ftp.example.com/resource", "ftp", NULL, "ftp.example.com", NULL, "/resource", NULL, NULL);
     test_uri("git://example.com/user/repo.git", "git", NULL, "example.com", NULL, "/user/repo.git", NULL, NULL);
 
-    // URIs with both query and fragment
+    /* URIs with both query and fragment */
     test_uri("http://example.com/?query#fragment", "http", NULL, "example.com", NULL, "/", "query", "fragment");
     test_uri("http://example.com/path/to/resource?param=value#fragment", "http", NULL, "example.com", NULL, "/path/to/resource", "param=value", "fragment");
     test_uri("http://example.com/path/to/resource?query#fragment", "http", NULL, "example.com", NULL, "/path/to/resource", "query", "fragment");
     test_uri("http://example.com/path?query#fragment", "http", NULL, "example.com", NULL, "/path", "query", "fragment");
     test_uri("http://example.com?query#fragment", "http", NULL, "example.com", NULL, "", "query", "fragment");
 
-    // Schemes other than HTTP
-    // No specific parsing of RFC-6068
+    /* Schemes other than HTTP */
+    /* No specific parsing of RFC-6068 */
     test_uri("mailto:user@example.com", "mailto", NULL, NULL, NULL, "user@example.com", NULL, NULL);
-    // No specific parsing of RFC-3966
+    /* No specific parsing of RFC-3966 */
     test_uri("tel:+1234567890", "tel", NULL, NULL, NULL, "+1234567890", NULL, NULL);
-    // No specific parsing of RFC-8141
+    /* No specific parsing of RFC-8141 */
     test_uri("urn:ietf:rfc:3986", "urn", NULL, NULL, NULL, "ietf:rfc:3986", NULL, NULL);
-    // These three appear at first glance to be invalid, but they are actually well formed URIs
+    /* These three appear at first glance to be invalid, but they are actually well formed URIs */
     test_uri("http:/example.com", "http", NULL, NULL, NULL, "/example.com", NULL, NULL);
     test_uri("http:example.com", "http", NULL, NULL, NULL, "example.com", NULL, NULL);
     test_uri("http:///path", "http", NULL, "", NULL, "/path", NULL, NULL);
-    // Useless, but valid
+    /* Useless, but valid */
     test_uri("http://", "http", NULL, "", NULL, "", NULL, NULL);
     test_uri("http://@", "http", "", "", NULL, "", NULL, NULL);
 
-    // URIs with userinfo
+    /* URIs with userinfo */
     test_uri("ftp://user@ftp.example.com", "ftp", "user", "ftp.example.com", NULL, "", NULL, NULL);
     test_uri("ftp://user:pass@ftp.example.com", "ftp", "user:pass", "ftp.example.com", NULL, "", NULL, NULL);
     test_uri("ftp://user:pass@ftp.example.com:21", "ftp", "user:pass", "ftp.example.com", "21", "", NULL, NULL);
@@ -122,7 +123,7 @@ int main() {
     test_uri("http://user:pass@example.com:80", "http", "user:pass", "example.com", "80", "", NULL, NULL);
     test_uri("http://www.example.com:123@", "http", "www.example.com:123", "", NULL, "", NULL, NULL);
 
-    // Uncommon ports and complex paths
+    /* Uncommon ports and complex paths */
     test_uri("ftp://example.com:2121/files", "ftp", NULL, "example.com", "2121", "/files", NULL, NULL);
     test_uri("http://127.0.0.1:8080/resource", "http", NULL, "127.0.0.1", "8080", "/resource", NULL, NULL);
     test_uri("http://127.1234.0.1:8080/resource", "http", NULL, "127.1234.0.1", "8080", "/resource", NULL, NULL);
@@ -130,144 +131,144 @@ int main() {
     test_uri("http://localhost:8080/test", "http", NULL, "localhost", "8080", "/test", NULL, NULL);
     test_uri("https://secure.example.com:8443", "https", NULL, "secure.example.com", "8443", "", NULL, NULL);
 
-    // URIs with complex paths and query strings
+    /* URIs with complex paths and query strings */
     test_uri("http://example.com/path/to/page/?param=value&another=thing", "http", NULL, "example.com", NULL, "/path/to/page/", "param=value&another=thing", NULL);
     test_uri("http://example.com/path/to/page?param1=value1&param2=value2", "http", NULL, "example.com", NULL, "/path/to/page", "param1=value1&param2=value2", NULL);
     test_uri("http://example.com/path;params?query=1", "http", NULL, "example.com", NULL, "/path;params", "query=1", NULL);
     test_uri("http://example.com/path?encoded%20query=space%20test", "http", NULL, "example.com", NULL, "/path", "encoded%20query=space%20test", NULL);
     test_uri("http://example.com/path?query_with_symbols=@!$&'()*+,%3D", "http", NULL, "example.com", NULL, "/path", "query_with_symbols=@!$&'()*+,%3D", NULL);
 
-    // URIs with empty path or authority
-    // No specific parsing of RFC-8089
+    /* URIs with empty path or authority */
+    /* No specific parsing of RFC-8089 */
     test_uri("file:///", "file", NULL, "", NULL, "/", NULL, NULL);
     test_uri("http://:@host", "http", ":", "host", NULL, "", NULL, NULL);
     test_uri("http://example.com#", "http", NULL, "example.com", NULL, "", NULL, "");
     test_uri("http://example.com?", "http", NULL, "example.com", NULL, "", "", NULL);
     test_uri("http://user@host", "http", "user", "host", NULL, "", NULL, NULL);
 
-    // URIs with extra slashes in path
+    /* URIs with extra slashes in path */
     test_uri("http://example.com////slashes#fragment", "http", NULL, "example.com", NULL, "////slashes", NULL, "fragment");
     test_uri("http://example.com///triple///slashes", "http", NULL, "example.com", NULL, "///triple///slashes", NULL, NULL);
     test_uri("http://example.com//double//slashes/", "http", NULL, "example.com", NULL, "//double//slashes/", NULL, NULL);
     test_uri("http://example.com/path//to//resource", "http", NULL, "example.com", NULL, "/path//to//resource", NULL, NULL);
     test_uri("http://example.com:8080//another//test", "http", NULL, "example.com", "8080", "//another//test", NULL, NULL);
 
-    // URIs with file scheme
-    // No specific parsing of RFC-8089
+    /* URIs with file scheme */
+    /* No specific parsing of RFC-8089 */
     test_uri("file:///C:/path/to/windows/file", "file", NULL, "", NULL, "/C:/path/to/windows/file", NULL, NULL);
     test_uri("file:C:/path/to/windows/file", "file", NULL, NULL, NULL, "C:/path/to/windows/file", NULL, NULL);
     test_uri("file:///home/user/file.txt", "file", NULL, "", NULL, "/home/user/file.txt", NULL, NULL);
     test_uri("file://localhost/C:/path/to/file", "file", NULL, "localhost", NULL, "/C:/path/to/file", NULL, NULL);
     test_uri("file://localhost/path/to/file", "file", NULL, "localhost", NULL, "/path/to/file", NULL, NULL);
 
-    // URIs with fragment containing special characters
+    /* URIs with fragment containing special characters */
     test_uri("http://example.com/#data%3Afragment", "http", NULL, "example.com", NULL, "/", NULL, "data%3Afragment");
     test_uri("http://example.com/#special@chars!", "http", NULL, "example.com", NULL, "/", NULL, "special@chars!");
     test_uri("http://example.com/path#unicode%F0%9F%98%80", "http", NULL, "example.com", NULL, "/path", NULL, "unicode%F0%9F%98%80");
     test_uri("http://example.com/path?query#%23encoded", "http", NULL, "example.com", NULL, "/path", "query", "%23encoded");
     test_uri("http://example.com/path?query#frag%20ment", "http", NULL, "example.com", NULL, "/path", "query", "frag%20ment");
 
-    // URIs with fragments
+    /* URIs with fragments */
     test_uri("http://example.com#fragment", "http", NULL, "example.com", NULL, "", NULL, "fragment");
     test_uri("http://example.com/#fragment", "http", NULL, "example.com", NULL, "/", NULL, "fragment");
     test_uri("http://example.com/path#fragment", "http", NULL, "example.com", NULL, "/path", NULL, "fragment");
     test_uri("http://example.com/path/to/resource#fragment", "http", NULL, "example.com", NULL, "/path/to/resource", NULL, "fragment");
     test_uri("http://example.com/path/to/resource#section1", "http", NULL, "example.com", NULL, "/path/to/resource", NULL, "section1");
 
-    // URIs with multiple consecutive colons in authority or path
+    /* URIs with multiple consecutive colons in authority or path */
     test_uri("http://example.com/path::path2", "http", NULL, "example.com", NULL, "/path::path2", NULL, NULL);
     test_uri("http://example.com/path:subpath:subsubpath", "http", NULL, "example.com", NULL, "/path:subpath:subsubpath", NULL, NULL);
     test_uri("http://user::pass@example.com:80", "http", "user::pass", "example.com", "80", "", NULL, NULL);
 
-    // URIs with multiple slashes
+    /* URIs with multiple slashes */
     test_uri("ftp://ftp.example.com///file", "ftp", NULL, "ftp.example.com", NULL, "///file", NULL, NULL);
     test_uri("http://example.com//////path", "http", NULL, "example.com", NULL, "//////path", NULL, NULL);
     test_uri("http://example.com//double//slash", "http", NULL, "example.com", NULL, "//double//slash", NULL, NULL);
     test_uri("http://example.com/path///to///resource", "http", NULL, "example.com", NULL, "/path///to///resource", NULL, NULL);
     test_uri("http://example.com:8080///multiple/slashes", "http", NULL, "example.com", "8080", "///multiple/slashes", NULL, NULL);
 
-    // URIs with paths that include encoded delimiters
+    /* URIs with paths that include encoded delimiters */
     test_uri("http://example.com/%2F%3Fpath%3Dquery", "http", NULL, "example.com", NULL, "/%2F%3Fpath%3Dquery", NULL, NULL);
     test_uri("http://example.com/%2Fpath#frag", "http", NULL, "example.com", NULL, "/%2Fpath", NULL, "frag");
     test_uri("http://example.com/%2Fpath%2F", "http", NULL, "example.com", NULL, "/%2Fpath%2F", NULL, NULL);
     test_uri("http://example.com/%2Fpath?param=%2Fvalue", "http", NULL, "example.com", NULL, "/%2Fpath", "param=%2Fvalue", NULL);
     test_uri("http://example.com/path%2Fto%2Fresource", "http", NULL, "example.com", NULL, "/path%2Fto%2Fresource", NULL, NULL);
 
-    // URIs with port numbers
+    /* URIs with port numbers */
     test_uri("ftp://ftp.example.com:21", "ftp", NULL, "ftp.example.com", "21", "", NULL, NULL);
     test_uri("http://example.com:1234/path", "http", NULL, "example.com", "1234", "/path", NULL, NULL);
     test_uri("http://example.com:80", "http", NULL, "example.com", "80", "", NULL, NULL);
     test_uri("http://example.com:8080", "http", NULL, "example.com", "8080", "", NULL, NULL);
     test_uri("https://example.com:443", "https", NULL, "example.com", "443", "", NULL, NULL);
 
-    // URIs with query strings
+    /* URIs with query strings */
     test_uri("http://example.com/?query", "http", NULL, "example.com", NULL, "/", "query", NULL);
     test_uri("http://example.com/path/to/resource?param=value", "http", NULL, "example.com", NULL, "/path/to/resource", "param=value", NULL);
     test_uri("http://example.com/path/to/resource?query", "http", NULL, "example.com", NULL, "/path/to/resource", "query", NULL);
     test_uri("http://example.com/path?query", "http", NULL, "example.com", NULL, "/path", "query", NULL);
     test_uri("http://example.com?query", "http", NULL, "example.com", NULL, "", "query", NULL);
 
-    // URIs with relative paths
+    /* URIs with relative paths */
     test_uri("http://example.com/././a/./b", "http", NULL, "example.com", NULL, "/././a/./b", NULL, NULL);
     test_uri("http://example.com/a/b/../../c", "http", NULL, "example.com", NULL, "/a/b/../../c", NULL, NULL);
     test_uri("http://example.com/path/../up/one", "http", NULL, "example.com", NULL, "/path/../up/one", NULL, NULL);
     test_uri("http://example.com/path/./to/./resource", "http", NULL, "example.com", NULL, "/path/./to/./resource", NULL, NULL);
     test_uri("http://example.com/path/dir/..", "http", NULL, "example.com", NULL, "/path/dir/..", NULL, NULL);
 
-    // IPv6 URIs
+    /* IPv6 URIs */
     test_uri("http://[2001:db8::1]", "http", NULL, "[2001:db8::1]", NULL, "", NULL, NULL);
     test_uri("http://[2001:db8::1]:8080", "http", NULL, "[2001:db8::1]", "8080", "", NULL, NULL);
     test_uri("http://[::1]", "http", NULL, "[::1]", NULL, "", NULL, NULL);
     test_uri("http://[::1]/path", "http", NULL, "[::1]", NULL, "/path", NULL, NULL);
     test_uri("http://[::1]:8080", "http", NULL, "[::1]", "8080", "", NULL, NULL);
 
-    // URIs with unusual schemes
+    /* URIs with unusual schemes */
     test_uri("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==", "data", NULL, NULL, NULL, "text/plain;base64,SGVsbG8sIFdvcmxkIQ==", NULL, NULL);
     test_uri("irc://irc.example.com/channel", "irc", NULL, "irc.example.com", NULL, "/channel", NULL, NULL);
-    // No specific parsing of magnet links
+    /* No specific parsing of magnet links */
     test_uri("magnet:?xt=urn:btih:abcdef&dn=example", "magnet", NULL, NULL, NULL, "", "xt=urn:btih:abcdef&dn=example", NULL);
-    // RFC-3261 is not handled correctly; it's not clear how to do this
-    // test_uri("sip:user@domain.com", "sip", "user", "domain.com", NULL, NULL, NULL, NULL);
-    // There is a draft RFC for URIs for SFTP and SSH
+    /* RFC-3261 is not handled correctly; it's not clear how to do this */
+    /* test_uri("sip:user@domain.com", "sip", "user", "domain.com", NULL, NULL, NULL, NULL); */
+    /* There is a draft RFC for URIs for SFTP and SSH */
     test_uri("ssh://user@server.example.com:22", "ssh", "user", "server.example.com", "22", "", NULL, NULL);
 
-    // Encoded characters in paths
+    /* Encoded characters in paths */
     test_uri("http://example.com/%E2%98%83", "http", NULL, "example.com", NULL, "/%E2%98%83", NULL, NULL);
     test_uri("http://example.com/emoji/%F0%9F%98%81", "http", NULL, "example.com", NULL, "/emoji/%F0%9F%98%81", NULL, NULL);
     test_uri("http://example.com/path%20with%20spaces", "http", NULL, "example.com", NULL, "/path%20with%20spaces", NULL, NULL);
     test_uri("http://example.com/path/with/special%40character", "http", NULL, "example.com", NULL, "/path/with/special%40character", NULL, NULL);
 
-    // Edge case: URIs with unusual character combinations
+    /* Edge case: URIs with unusual character combinations */
     test_uri("http://example.com:80/pa%20th/?q=a%20b#f%23g", "http", NULL, "example.com", "80", "/pa%20th/", "q=a%20b", "f%23g");
     test_uri("http://user:pass@host.com:8080/a/b/../c/./d/?x#y", "http", "user:pass", "host.com", "8080", "/a/b/../c/./d/", "x", "y");
     test_uri("http://user@host.com:1234/p@th/?query@", "http", "user", "host.com", "1234", "/p@th/", "query@", NULL);
     test_uri("https://host.com/!$%26'()*+,-./:;=?@_~#", "https", NULL, "host.com", NULL, "/!$%26'()*+,-./:;=", "@_~", "");
     test_uri("mailto:user@%20example.com", "mailto", NULL, NULL, NULL, "user@%20example.com", NULL, NULL);
 
-    // Edge cases with userinfo containing symbols
+    /* Edge cases with userinfo containing symbols */
     test_uri("ftp://an%40n%24%40nymous@ftp.example.com", "ftp", "an%40n%24%40nymous", "ftp.example.com", NULL, "", NULL, NULL);
     test_uri("http://user%3Aname@example.com", "http", "user%3Aname", "example.com", NULL, "", NULL, NULL);
     test_uri("http://user:pa$$word@example.com", "http", "user:pa$$word", "example.com", NULL, "", NULL, NULL);
     test_uri("http://user:pass@host.com:8080#frag", "http", "user:pass", "host.com", "8080", "", NULL, "frag");
     test_uri("https://user:@host.com", "https", "user:", "host.com", NULL, "", NULL, NULL);
 
-    // Internationalized domain names (IDN)
-    // NOTE: these do not work; the RFC only specifies ascii characters
-    //       to test these yourself, use set_alpha_parser with a parser that handles unicode
-    // test_uri("http://example.com/中文", "http", NULL, "example.com", NULL, "/中文", NULL, NULL);
-    // test_uri("http://example.भारत", "http", NULL, "example.भारत", NULL, "", NULL, NULL);
-    // test_uri("http://example.中国", "http", NULL, "example.中国", NULL, "", NULL, NULL);
-    // test_uri("http://www.пример.рф", "http", NULL, "www.пример.рф", NULL, "", NULL, NULL);
-    // test_uri("http://xn--exmple-cua.com", "http", NULL, "xn--exmple-cua.com", NULL, "", NULL, NULL);
-    // test_uri("http://例子.测试", "http", NULL, "例子.测试", NULL, "", NULL, NULL);
+    /* Internationalized domain names (IDN) */
+    /* NOTE: these do not work; the RFC only specifies ascii characters
+             to test these yourself, use set_alpha_parser with a parser that handles unicode */
+    /* test_uri("http://example.com/中文", "http", NULL, "example.com", NULL, "/中文", NULL, NULL); */
+    /* test_uri("http://example.भारत", "http", NULL, "example.भारत", NULL, "", NULL, NULL); */
+    /* test_uri("http://example.中国", "http", NULL, "example.中国", NULL, "", NULL, NULL); */
+    /* test_uri("http://www.пример.рф", "http", NULL, "www.пример.рф", NULL, "", NULL, NULL); */
+    /* test_uri("http://xn--exmple-cua.com", "http", NULL, "xn--exmple-cua.com", NULL, "", NULL, NULL); */
+    /* test_uri("http://例子.测试", "http", NULL, "例子.测试", NULL, "", NULL, NULL); */
 
-    // URIs with reserved characters in query
+    /* URIs with reserved characters in query */
     test_uri("http://example.com/path?key1=val1&key2=val2@chars", "http", NULL, "example.com", NULL, "/path", "key1=val1&key2=val2@chars", NULL);
     test_uri("http://example.com/path?query=needs%3Dencoding", "http", NULL, "example.com", NULL, "/path", "query=needs%3Dencoding", NULL);
     test_uri("http://example.com/path?query=special%20chars!@$", "http", NULL, "example.com", NULL, "/path", "query=special%20chars!@$", NULL);
     test_uri("http://example.com/path?query=val!@$&*()-_=+", "http", NULL, "example.com", NULL, "/path", "query=val!@$&*()-_=+", NULL);
 
-    // Invalid URIs (all should result in NULL)
+    /* Invalid URIs (all should result in NULL) */
     test_uri("://example.com", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     test_uri("http://example.com/path?query=[brackets]", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     test_uri("ftp://user@ftp.example.com::21/files", NULL, NULL, NULL, NULL, NULL, NULL, NULL);

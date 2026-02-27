@@ -1,33 +1,34 @@
-// URIPathFinder: A simple parser for URIs
-//
-// BSD 3-Clause License
-//
-// Copyright (c) 2024, Nate Bragg
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its
-//    contributors may be used to endorse or promote products derived from
-//    this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/* URIPathFinder: A simple parser for URIs
+ *
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2024, Nate Bragg
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #include "rfc_3966.h"
 
@@ -91,7 +92,7 @@ void test_tel(char *p_url, char *p_global_number, char *p_local_number, char *p_
 
 int main()
 {
-    // Valid URIs
+    /* Valid URIs */
     test_tel("tel:+1234567890", "+1234567890", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     test_tel("tel:+1234567890;ext=1234", "+1234567890", NULL, ";ext=1234", NULL, NULL, NULL, NULL, NULL, NULL);
     test_tel("tel:+1234567890;isub=5678", "+1234567890", NULL, NULL, ";isub=5678", NULL, NULL, NULL, NULL, NULL);
@@ -134,28 +135,28 @@ int main()
     test_tel("tel:+49-30-555-4321;isub=meta@key", "+49-30-555-4321", NULL, NULL, ";isub=meta@key", NULL, NULL, NULL, NULL, NULL);
     test_tel("tel:+41-44-555-1212;isub=meta!id;param=*&123", "+41-44-555-1212", NULL, NULL, ";isub=meta!id", NULL, ";param=*&123", NULL, NULL, NULL);
 
-    // Invalid URIs
-    // * local number can't have alphas
+    /* Invalid URIs */
+    /* * local number can't have alphas */
     test_tel("tel:123abc7890", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * local number can't have !
+    /* * local number can't have ! */
     test_tel("tel:+123-456-78!90", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * global number can't have phone-context
+    /* * global number can't have phone-context */
     test_tel("tel:+5551234567;foo=bar;phone-context=example.com", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * local number missing phone-context
+    /* * local number missing phone-context */
     test_tel("tel:1234567890", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * local number with other parameters but missing phone-context
+    /* * local number with other parameters but missing phone-context */
     test_tel("tel:19876543210;ext=234", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * phone-context missing value
+    /* * phone-context missing value */
     test_tel("tel:5551234567;foo=bar;phone-context=;isub=9999", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * phone-context should start with + or alpha
+    /* * phone-context should start with + or alpha */
     test_tel("tel:5551234;ext=23;isub=567;phone-context=800", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * parameters can't have spaces inside value
+    /* * parameters can't have spaces inside value */
     test_tel("tel:5551234567;ext=12 phone-context=example.com", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * global number can't have spaces
+    /* * global number can't have spaces */
     test_tel("tel:+1 800 555 5555", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * global number with other parameters can't have spaces
+    /* * global number with other parameters can't have spaces */
     test_tel("tel:+1415 555 2671;foo=bar", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    // * parameter values can't start with spaces
+    /* * parameter values can't start with spaces */
     test_tel("tel:+5551234567;foo= bar;isub=9999", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
     printf("Total failures: %d\n", failures);
