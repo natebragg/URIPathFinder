@@ -22,7 +22,7 @@ STATIC_LIB=${BUILD_DIR}/libURIPathFinder.a
 
 CC=gcc
 CFLAGS=-Wall -Wextra -Wno-comment -Wno-logical-op-parentheses $\
-	   -Wno-unused-function -std=c89 -O3 -I${INCLUDE_DIR}
+	   -Wno-parentheses -Wno-unused-function -std=c89 -O3 -I${INCLUDE_DIR}
 
 .PHONY: lib
 lib: ${STATIC_LIB}

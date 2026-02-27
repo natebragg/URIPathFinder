@@ -140,4 +140,6 @@ int main() {
     ASSERT(!tree_insert("should fail", 12, &ar)); /* we ran out of space */
 
     printf("done\n");
+
+    return 0;
 }
